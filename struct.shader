@@ -1,6 +1,11 @@
 ﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
 Shader "LX/struct"
 {
+    Properties
+    {
+        _Color("Color",Color)=(1,1,1,1)
+    }
+    
     SubShader
     {
         Pass
@@ -10,9 +15,10 @@ Shader "LX/struct"
             //此处为unity shader特有的指令，意思为指定顶点着色器和片元着色器的名字
             #pragma vertex vert
             #pragma fragment frag
-            //为了使用UnityObjectToClipPos方法需要进行Include
+            //include unity提供的帮助文件
             #include <UnityShaderUtilities.cginc>
 
+            fixed4 _Color;
             //声明一个结构体，设为参数后就会作为顶点着色器的输入
             struct a2v
             {
@@ -48,7 +54,7 @@ Shader "LX/struct"
             fixed4 frag(v2f i):SV_Target
             {
                 //返回上一步得出的颜色
-                return fixed4(i.color, 1);
+                return fixed4(i.color*_Color.rgb, 1);
             }
             ENDCG
 
