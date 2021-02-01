@@ -1,4 +1,4 @@
-﻿Shader "LX/lambertDiffuse_vertex"
+﻿Shader "LX/lambertDiffuse_pixel"
 {
     Properties
     {
@@ -16,7 +16,6 @@
             #pragma vertex vert
             #pragma fragment frag
             #include "UnityCG.cginc"
-
             fixed4 _Color;
 
             struct a2v
@@ -28,7 +27,7 @@
             struct v2f
             {
                 float4 pos : SV_POSITION;
-                fixed3 color:COLOR;
+                fixed3 worldNormal:TEXCOORD0;
             };
 
 
@@ -36,21 +35,17 @@
             {
                 v2f o;
                 o.pos = UnityObjectToClipPos(v.vertex);
-                //获取在unity编辑器中定义的环境光
-                fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT.xyz;
-                //把顶点法线变换到世界坐标系下
                 fixed3 worldNormal = normalize(mul((float3x3)unity_ObjectToWorld, v.normal));
-                //获取光照方向
-                fixed3 worldLight = normalize(_WorldSpaceLightPos0.xyz);
-                fixed3 diffuse = unity_LightColor0.rgb * _Color.rgb * saturate(dot(worldNormal, worldLight));
-
-                o.color = diffuse + ambient;
+                o.worldNormal = worldNormal;
                 return o;
             }
 
             fixed4 frag(v2f i) : SV_Target
             {
-                return fixed4(i.color, 1);
+                fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT.xyz;
+                fixed3 worldLightDir = normalize(_WorldSpaceLightPos0.xyz);
+                fixed3 diffuse = unity_LightColor0.rgb * _Color.rgb * saturate(dot(i.worldNormal, worldLightDir));
+                return fixed4(diffuse + ambient, 1);
             }
             ENDCG
         }
