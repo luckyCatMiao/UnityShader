@@ -15,13 +15,13 @@
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            #include "UnityCG.cginc"
+            #include "Lighting.cginc"
             fixed4 _Color;
 
             struct a2v
             {
                 float4 vertex : POSITION;
-                float2 normal : NORMAL;
+                float3 normal : NORMAL;
             };
 
             struct v2f
@@ -44,7 +44,7 @@
             {
                 fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT.xyz;
                 fixed3 worldLightDir = normalize(_WorldSpaceLightPos0.xyz);
-                fixed3 diffuse = unity_LightColor0.rgb * _Color.rgb * saturate(dot(i.worldNormal, worldLightDir));
+                fixed3 diffuse = _LightColor0.rgb * _Color.rgb * saturate(dot(i.worldNormal, worldLightDir));
                 return fixed4(diffuse + ambient, 1);
             }
             ENDCG

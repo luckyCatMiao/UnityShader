@@ -2,7 +2,7 @@
 {
     Properties
     {
-        _Color("Diffuse",Color)=(1,1,1,1)
+        _Diffuse("Diffuse",Color)=(1,1,1,1)
     }
     SubShader
     {
@@ -15,14 +15,14 @@
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            #include "UnityCG.cginc"
+            #include "Lighting.cginc"
 
-            fixed4 _Color;
+            fixed4 _Diffuse;
 
             struct a2v
             {
-                float4 vertex : POSITION;
-                float2 normal : NORMAL;
+                float4 pos : POSITION;
+                float3 normal : NORMAL;
             };
 
             struct v2f
@@ -35,14 +35,14 @@
             v2f vert(a2v v)
             {
                 v2f o;
-                o.pos = UnityObjectToClipPos(v.vertex);
+                o.pos = UnityObjectToClipPos(v.pos);
                 //获取在unity编辑器中定义的环境光
                 fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT.xyz;
                 //把顶点法线变换到世界坐标系下
-                fixed3 worldNormal = normalize(mul((float3x3)unity_ObjectToWorld, v.normal));
+                fixed3 worldNormal = normalize(mul(unity_ObjectToWorld, v.normal));
                 //获取光照方向
                 fixed3 worldLight = normalize(_WorldSpaceLightPos0.xyz);
-                fixed3 diffuse = unity_LightColor0.rgb * _Color.rgb * saturate(dot(worldNormal, worldLight));
+                fixed3 diffuse =_LightColor0.rgb * _Diffuse.rgb * saturate(dot(worldNormal, worldLight));
 
                 o.color = diffuse + ambient;
                 return o;
