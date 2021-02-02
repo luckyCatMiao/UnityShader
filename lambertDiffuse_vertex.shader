@@ -21,7 +21,7 @@
 
             struct a2v
             {
-                float4 pos : POSITION;
+                float4 position : POSITION;
                 float3 normal : NORMAL;
             };
 
@@ -32,14 +32,14 @@
             };
 
 
-            v2f vert(a2v v)
+            v2f vert(a2v vertData)
             {
                 v2f o;
-                o.pos = UnityObjectToClipPos(v.pos);
+                o.pos = UnityObjectToClipPos(vertData.position);
                 //获取在unity编辑器中定义的环境光
                 fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT.xyz;
                 //把顶点法线变换到世界坐标系下
-                fixed3 worldNormal = normalize(mul(unity_ObjectToWorld, v.normal));
+                fixed3 worldNormal = normalize(mul(unity_ObjectToWorld, vertData.normal));
                 //获取光照方向
                 fixed3 worldLight = normalize(_WorldSpaceLightPos0.xyz);
                 fixed3 diffuse =_LightColor0.rgb * _Diffuse.rgb * saturate(dot(worldNormal, worldLight));

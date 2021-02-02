@@ -31,11 +31,11 @@
             };
 
 
-            v2f vert(a2v v)
+            v2f vert(a2v vertData)
             {
                 v2f o;
-                o.pos = UnityObjectToClipPos(v.vertex);
-                fixed3 worldNormal = normalize(mul((float3x3)unity_ObjectToWorld, v.normal));
+                o.pos = UnityObjectToClipPos(vertData.vertex);
+                fixed3 worldNormal = normalize(mul((float3x3)unity_ObjectToWorld, vertData.normal));
                 o.worldNormal = worldNormal;
                 return o;
             }
