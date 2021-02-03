@@ -1,4 +1,4 @@
-﻿Shader "LX/normalMap_tangent"
+﻿Shader "LX/normalMap_world"
 {
     Properties
     {
@@ -43,8 +43,9 @@
             {
                 float4 position:SV_POSITION;
                 float4 uv :TEXCOORD0;
-                float3 lightDir:TEXCOORD1;
-                float3 viewDir:TEXCOORD2;
+                float4 ToW0:TEXCOORD1;
+                float4 ToW1:TEXCOORD2;
+                float4 ToW2:TEXCOORD3;
             };
 
             v2f vert(a2v vertData)
@@ -53,32 +54,36 @@
                 o.position = UnityObjectToClipPos(vertData.position);
                 o.uv.xy = vertData.texcoord.xy * _MainTex_ST.xy + _MainTex_ST.zw;
                 o.uv.zw = vertData.texcoord.xy * _BumpMap_ST.xy + _BumpMap_ST.zw;
-                
-                float3 binormal = cross(normalize(vertData.normal), normalize(vertData.tangent.xyz)) * vertData.tangent.
-                    w;
-                float3x3 rotation = float3x3(vertData.tangent.xyz, binormal, vertData.normal);
-                o.lightDir = mul(rotation, ObjSpaceLightDir(vertData.position)).xyz;
-                o.viewDir = mul(rotation, ObjSpaceViewDir(vertData.position)).xyz;
+
+                float3 worldPos = mul(unity_ObjectToWorld,vertData.position).xyz;
+                fixed3 worldNormal = UnityObjectToWorldNormal(vertData.normal);
+                fixed3 worldTangent = UnityObjectToWorldDir(vertData.tangent.xyz);
+                fixed3 worldBinormal = cross(worldNormal, worldTangent) * vertData.tangent.w;
+
+                o.ToW0 = float4(worldTangent.x, worldBinormal.x, worldNormal.x, worldPos.x);
+                o.ToW1 = float4(worldTangent.y, worldBinormal.y, worldNormal.y, worldPos.y);
+                o.ToW2 = float4(worldTangent.z, worldBinormal.z, worldNormal.z, worldPos.z);
 
                 return o;
             }
 
             fixed4 frag(v2f i):SV_Target
             {
-                fixed3 tangentLightDir = normalize(i.lightDir);
-                fixed3 tangentViewDir = normalize(i.viewDir);
+                float3 worldPos=float3(i.ToW0.w,i.ToW1.w,i.ToW2.w);
+                fixed3 lightDir=normalize(UnityWorldSpaceLightDir(worldPos));
+                fixed3 viewDir=normalize(UnityWorldSpaceViewDir(worldPos));
 
-                fixed4 packedNormal = tex2D(_BumpMap, i.uv.zw);
-                fixed3 tangentNormal = UnpackNormal(packedNormal);
-                tangentNormal.xy *= _BumpScale;
-                tangentNormal.z = sqrt(1.0 - saturate(dot(tangentNormal.xy, tangentNormal.xy)));
+                fixed3 bump=UnpackNormal(tex2D(_BumpMap,i.uv.zw));
+                bump.xy*=_BumpScale;
+                bump.z=sqrt(1.0-saturate(dot(bump.xy,bump.xy)));
+                bump=normalize(half3(dot(i.ToW0.xyz,bump),dot(i.ToW1.xyz,bump),dot(i.ToW2.xyz,bump)));
 
                 fixed3 texColor = tex2D(_MainTex, i.uv).rgb;
                 fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT * texColor;
-                fixed3 diffuse = _LightColor0.rgb * texColor * saturate(dot(tangentNormal, tangentLightDir));
-                fixed3 halfDir = normalize(tangentLightDir + tangentViewDir);
+                fixed3 diffuse = _LightColor0.rgb * texColor * saturate(dot(bump, lightDir));
+                fixed3 halfDir = normalize(lightDir + viewDir);
                 fixed3 specular = texColor * _LightColor0.rgb * _Specular.rgb * pow(
-                    saturate(dot(tangentNormal, halfDir)), _Gloss);
+                    saturate(dot(bump, halfDir)), _Gloss);
                 return fixed4(ambient + diffuse + specular, 1.0);
             }
             ENDCG
