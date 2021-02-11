@@ -2,7 +2,7 @@
 
 
 [RequireComponent(typeof(Camera))]
-public class edgeDetection : MonoBehaviour
+public class EdgeDetection : MonoBehaviour
 {
     public Shader shader;
     public Color edgeColor;

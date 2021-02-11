@@ -1,4 +1,4 @@
-﻿Shader "LX/postEffect1"
+﻿Shader "LX/adjustImg"
 {
     Properties
     {

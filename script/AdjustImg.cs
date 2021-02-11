@@ -2,7 +2,7 @@
 
 [ExecuteInEditMode]
 [RequireComponent(typeof(Camera))]
-public class renderImg : MonoBehaviour
+public class AdjustImg : MonoBehaviour
 {
     [Range(0, 3)] public float brightness;
     [Range(0, 3)] public float saturation;
