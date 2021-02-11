@@ -9,8 +9,8 @@ public class Bloom : MonoBehaviour
     private void OnRenderImage(RenderTexture src, RenderTexture dest)
     {
         Material material = new Material(shader);
-        int width = src.width;
-        int height = src.height ;
+        int width = src.width/downSample;
+        int height = src.height/downSample ;
 
         var brightArea = RenderTexture.GetTemporary(width, height, 0);
         brightArea.filterMode = FilterMode.Bilinear;
