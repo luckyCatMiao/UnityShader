@@ -1,8 +1,9 @@
-﻿Shader "LX/test1"
+﻿Shader "LX/cartoon"
 {
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
+        _RampTex ("Ramp Texture", 2D) = "white" {}
     }
     SubShader
     {
@@ -26,17 +27,22 @@
             {
                 float4 vertex : POSITION;
                 float2 uv : TEXCOORD0;
+                float3 normal : NORMAL;
             };
 
             struct v2f
             {
                 float2 uv : TEXCOORD0;
+                UNITY_FOG_COORDS(1)
                 float4 vertex : SV_POSITION;
-                float worldY:TEXCOORD02;
+                float3 worldPos:TEXCOORD2;
+                float3 worldNormal:TEXCOORD3;
             };
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
+
+            sampler2D _RampTex;
 
 
             v2f vert(appdata v)
@@ -44,11 +50,9 @@
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-
-
-                o.worldY = mul(unity_ObjectToWorld, v.vertex).y;
-              
-              
+                UNITY_TRANSFER_FOG(o, o.vertex);
+                o.worldPos = mul(unity_ObjectToWorld, v.vertex);
+                o.worldNormal = UnityObjectToWorldNormal(v.normal);
                 return o;
             }
 
@@ -57,17 +61,16 @@
                 // sample the texture
                 fixed4 col = tex2D(_MainTex, i.uv);
                 // apply fog
+                UNITY_APPLY_FOG(i.fogCoord, col);
+
+                float3 ambient = UNITY_LIGHTMODEL_AMBIENT.xyz * col.rgb;
+                float3 worldLightDir = normalize(UnityWorldSpaceLightDir(i.worldPos));
+                float3 worldNormal = normalize(i.worldNormal);
+                fixed value = dot(worldNormal, worldLightDir)/2+0.5;
+                float3 diffuse = tex2D(_RampTex,fixed2(value, value)) * col*0.6f;
 
 
-              
-                if (i.worldY > 1)
-                {
-                    return fixed4(0, 0, 0, 1);
-                }
-                else
-                {
-                    return col;
-                }
+                return fixed4(ambient + diffuse, 1);
             }
             ENDCG
         }

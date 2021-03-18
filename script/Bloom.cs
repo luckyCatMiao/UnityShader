@@ -15,7 +15,7 @@ public class Bloom : MonoBehaviour
         var brightArea = RenderTexture.GetTemporary(width, height, 0);
         brightArea.filterMode = FilterMode.Bilinear;
         Graphics.Blit(src, brightArea, material, 0);
-
+        
         for (int i = 0; i < iteration; i++)
         {
             var temp = RenderTexture.GetTemporary(width, height, 0);
