@@ -50,7 +50,7 @@
                 float4 vertex : SV_POSITION;
                 float3 normal:TEXCOORD0;
                 float3 worldPos:TEXCOORD1;
-                float2 uv:TEXCOORD2;
+                float2 uvMain:TEXCOORD2;
                 float4 tangent:TEXCOORD3;
             };
 
@@ -60,7 +60,7 @@
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.worldPos = mul(unity_ObjectToWorld, v.vertex);
-                o.uv = TRANSFORM_TEX(v.uv, _Texture);
+                o.uvMain = TRANSFORM_TEX(v.uv, _Texture);
                 o.normal = v.normal;
                 o.tangent = v.tangent;
 
@@ -69,9 +69,9 @@
 
             fixed4 frag(v2f i) : SV_Target
             {
-                float3 texColor = tex2D(_Texture, i.uv);
+                float3 texColor = tex2D(_Texture, i.uvMain);
                 //从法线贴图中获取法线方向，此时在切线空间下
-                float3 normal = UnpackNormal(tex2D(_BumpTexture, i.uv));
+                float3 normal = UnpackNormal(tex2D(_BumpTexture, i.uvMain));
                 //使用Bumpscale控制凹凸程度
                 normal.xy*=_BumpScale;
                 normal.z=sqrt(1-saturate(dot(normal.xy,normal.xy)));

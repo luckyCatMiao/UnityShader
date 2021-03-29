@@ -44,7 +44,7 @@ Shader "LX/forwardRendering"
                 float4 position:SV_POSITION;
                 float3 worldNormal:TEXCOORD0;
                 float3 worldPosition:TEXCOORD1;
-                float2 uv:TEXCOORD2;
+                float2 uvMain:TEXCOORD2;
             };
 
             v2f vert(a2v vertData)
@@ -53,7 +53,7 @@ Shader "LX/forwardRendering"
                 o.position = UnityObjectToClipPos(vertData.position);
                 o.worldNormal = normalize(UnityObjectToWorldNormal(vertData.normal));
                 o.worldPosition = mul(unity_ObjectToWorld, vertData.position);
-                o.uv = vertData.texcoord.xy * _MainTex_ST.xy + _MainTex_ST.zw;
+                o.uvMain = vertData.texcoord.xy * _MainTex_ST.xy + _MainTex_ST.zw;
 
                 return o;
             }
@@ -61,7 +61,7 @@ Shader "LX/forwardRendering"
             fixed4 frag(v2f i):SV_Target
             {
                 fixed3 worldLightDir = normalize(UnityWorldSpaceLightDir(i.worldPosition));
-                fixed3 texColor = tex2D(_MainTex, i.uv).rgb;
+                fixed3 texColor = tex2D(_MainTex, i.uvMain).rgb;
                 fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT * texColor;
                 fixed3 diffuse = _LightColor0.rgb * texColor * saturate(dot(i.worldNormal, worldLightDir));
                 fixed3 viewDir = normalize(UnityWorldSpaceViewDir(i.worldPosition));
@@ -104,7 +104,7 @@ Shader "LX/forwardRendering"
                 float4 position:SV_POSITION;
                 float3 worldNormal:TEXCOORD0;
                 float3 worldPosition:TEXCOORD1;
-                float2 uv:TEXCOORD2;
+                float2 uvMain:TEXCOORD2;
             };
 
             v2f vert(a2v vertData)
@@ -113,7 +113,7 @@ Shader "LX/forwardRendering"
                 o.position = UnityObjectToClipPos(vertData.position);
                 o.worldNormal = normalize(UnityObjectToWorldNormal(vertData.normal));
                 o.worldPosition = mul(unity_ObjectToWorld, vertData.position);
-                o.uv = vertData.texcoord.xy * _MainTex_ST.xy + _MainTex_ST.zw;
+                o.uvMain = vertData.texcoord.xy * _MainTex_ST.xy + _MainTex_ST.zw;
 
                 return o;
             }
@@ -131,7 +131,7 @@ Shader "LX/forwardRendering"
                 #endif
 
                 fixed3 worldLightDir = normalize(UnityWorldSpaceLightDir(i.worldPosition));
-                fixed3 texColor = tex2D(_MainTex, i.uv).rgb;
+                fixed3 texColor = tex2D(_MainTex, i.uvMain).rgb;
                 fixed3 diffuse = _LightColor0.rgb * texColor * saturate(dot(i.worldNormal, worldLightDir));
                 fixed3 viewDir = normalize(UnityWorldSpaceViewDir(i.worldPosition));
                 fixed3 halfDir = normalize(worldLightDir + viewDir);

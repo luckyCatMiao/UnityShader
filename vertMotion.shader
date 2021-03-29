@@ -27,7 +27,7 @@
 
             struct v2f
             {
-                float2 uv : TEXCOORD0;
+                float2 uvMain : TEXCOORD0;
                 UNITY_FOG_COORDS(1)
                 float4 vertex : SV_POSITION;
             };
@@ -40,7 +40,7 @@
                
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex)+float4(sin(_Time.y*v.vertex.x),cos(_Time.y*v.vertex.y),cos(_Time.y*v.vertex.z),0);
-                o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+                o.uvMain = TRANSFORM_TEX(v.uv, _MainTex);
                 UNITY_TRANSFER_FOG(o,o.vertex);
                 return o;
             }
@@ -48,7 +48,7 @@
             fixed4 frag (v2f i) : SV_Target
             {
                 // sample the texture
-                fixed4 col = tex2D(_MainTex, i.uv);
+                fixed4 col = tex2D(_MainTex, i.uvMain);
                 // apply fog
                 UNITY_APPLY_FOG(i.fogCoord, col);
                 return col;

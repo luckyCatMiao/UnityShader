@@ -40,7 +40,7 @@
 
             struct v2f
             {
-                float2 uv : TEXCOORD0;
+                float2 uvMain : TEXCOORD0;
                 float4 vertex : SV_POSITION;
             };
 
@@ -55,7 +55,7 @@
             {
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
-                o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+                o.uvMain = TRANSFORM_TEX(v.uv, _MainTex);
                 return o;
             }
 
@@ -65,7 +65,7 @@
                 float row = floor(time / _HorizontalAmount);
                 float column = time - row * _VerticalAmount;
 
-                half2 uv = i.uv + half2(column, -row);
+                half2 uv = i.uvMain + half2(column, -row);
                 uv.x /= _HorizontalAmount;
                 uv.y /= _VerticalAmount;
                 fixed4 c = tex2D(_MainTex, uv);

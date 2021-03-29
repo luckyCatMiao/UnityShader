@@ -32,7 +32,7 @@
 
             struct v2f
             {
-                float2 uv : TEXCOORD0;
+                float2 uvMain : TEXCOORD0;
                 UNITY_FOG_COORDS(1)
                 float4 vertex : SV_POSITION;
                 float3 worldPos:TEXCOORD2;
@@ -49,7 +49,7 @@
             {
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
-                o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+                o.uvMain = TRANSFORM_TEX(v.uv, _MainTex);
                 UNITY_TRANSFER_FOG(o, o.vertex);
                 o.worldPos = mul(unity_ObjectToWorld, v.vertex);
                 o.worldNormal = UnityObjectToWorldNormal(v.normal);
@@ -59,7 +59,7 @@
             fixed4 frag(v2f i) : SV_Target
             {
                 // sample the texture
-                fixed4 col = tex2D(_MainTex, i.uv);
+                fixed4 col = tex2D(_MainTex, i.uvMain);
                 // apply fog
                 UNITY_APPLY_FOG(i.fogCoord, col);
 
@@ -68,7 +68,6 @@
                 float3 worldNormal = normalize(i.worldNormal);
                 fixed value = dot(worldNormal, worldLightDir)/2+0.5;
                 float3 diffuse = tex2D(_RampTex,fixed2(value, value)) * col*0.6f;
-
 
                 return fixed4(ambient + diffuse, 1);
             }

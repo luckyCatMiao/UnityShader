@@ -7,7 +7,7 @@ Shader "LX/cartoon2"
         _MainTex ("Texture", 2D) = "white" {}
         _RampTex ("Texture", 2D) = "white" {}
         _OutLine ("OutLine",float)=1
-        _OutLineColor("_OutLineColor",color)=(0,0,0,0)
+        _OutLineColor("OutLineColor",color)=(0,0,0,0)
     }
     SubShader
     {
@@ -16,7 +16,6 @@ Shader "LX/cartoon2"
             "RenderType"="Opaque"
         }
         LOD 100
-
         Pass
         {
             NAME "OUTLINE"
@@ -49,7 +48,13 @@ Shader "LX/cartoon2"
             v2f vert(appdata v)
             {
                 v2f o;
-                o.vertex = UnityObjectToClipPos(v.vertex + normalize(v.normal) * _OutLine);
+                //o.vertex = UnityObjectToClipPos(v.vertex + normalize(v.normal) * _OutLine);
+                float4 pos=mul(UNITY_MATRIX_MV,v.vertex);
+                float3 normal=mul((float3x3)UNITY_MATRIX_IT_MV,v.normal);
+                normal.z=0.5;
+                pos=pos+float4(normalize(normal),0)*_OutLine;
+                o.vertex=mul(UNITY_MATRIX_P,pos);
+
                 return o;
             }
 
@@ -59,7 +64,6 @@ Shader "LX/cartoon2"
             }
             ENDCG
         }
-
 
 
 
@@ -87,7 +91,7 @@ Shader "LX/cartoon2"
 
             struct v2f
             {
-                float2 uv : TEXCOORD0;
+                float2 uvMain : TEXCOORD0;
                 UNITY_FOG_COORDS(1)
                 float4 vertex : SV_POSITION;
                 float4 objectVertex:TEXCOORD2;
@@ -107,7 +111,7 @@ Shader "LX/cartoon2"
                 v2f o;
                 o.objectVertex = v.vertex;
                 o.vertex = UnityObjectToClipPos(v.vertex + normalize(v.normal) * 0);
-                o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+                o.uvMain = TRANSFORM_TEX(v.uv, _MainTex);
                 UNITY_TRANSFER_FOG(o, o.vertex);
 
                 o.worldLightDir = normalize(UnityWorldSpaceLightDir(mul(unity_ObjectToWorld, v.vertex)));
@@ -120,7 +124,7 @@ Shader "LX/cartoon2"
             {
                 // sample the texture
 
-                fixed4 col = tex2D(_MainTex, i.uv);
+                fixed4 col = tex2D(_MainTex, i.uvMain);
                 // apply fog
                 UNITY_APPLY_FOG(i.fogCoord, col);
 
@@ -139,6 +143,9 @@ Shader "LX/cartoon2"
             }
             ENDCG
         }
+
+
+
     }
     Fallback "Diffuse"
 }

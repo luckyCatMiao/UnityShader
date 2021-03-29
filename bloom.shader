@@ -17,7 +17,7 @@
 
         struct v2f
         {
-            float2 uv : TEXCOORD0;
+            float2 uvMain : TEXCOORD0;
             float4 vertex : SV_POSITION;
         };
 
@@ -32,13 +32,13 @@
         {
             v2f o;
             o.vertex = UnityObjectToClipPos(v.vertex);
-            o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+            o.uvMain = TRANSFORM_TEX(v.uv, _MainTex);
             return o;
         }
 
         fixed4 fragExtractBright(v2f i) : SV_Target
         {
-            fixed4 col = tex2D(_MainTex, i.uv);
+            fixed4 col = tex2D(_MainTex, i.uvMain);
             fixed val = clamp(Luminance(col) - threshold, 0, 1);
 
             return col * val;
@@ -49,13 +49,13 @@
         {
             v2f o;
             o.vertex = UnityObjectToClipPos(v.vertex);
-            o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+            o.uvMain = TRANSFORM_TEX(v.uv, _MainTex);
             return o;
         }
 
         fixed4 fragBloom(v2f i) : SV_Target
         {
-            fixed4 col = tex2D(_MainTex, i.uv) + tex2D(_Bloom, i.uv);
+            fixed4 col = tex2D(_MainTex, i.uvMain) + tex2D(_Bloom, i.uvMain);
             return col;
         }
         ENDCG
