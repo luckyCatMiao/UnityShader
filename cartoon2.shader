@@ -1,13 +1,13 @@
-﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
-Shader "LX/cartoon2"
+﻿Shader "LX/cartoon2"
 {
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
         _RampTex ("Texture", 2D) = "white" {}
+        _RampColor("RampColor",color)=(0.6,0.6,0.6,1)
         _OutLine ("OutLine",float)=1
         _OutLineColor("OutLineColor",color)=(0,0,0,0)
+        _SpecularThreshold("SpecularThreshold",float)=0.5
     }
     SubShader
     {
@@ -36,25 +36,21 @@ Shader "LX/cartoon2"
                 float4 vertex : SV_POSITION;
             };
 
-            sampler2D _MainTex;
-            float4 _MainTex_ST;
-
-            sampler2D _RampTex;
 
             float _OutLine;
             fixed4 _OutLineColor;
 
-
             v2f vert(appdata v)
             {
                 v2f o;
-                //o.vertex = UnityObjectToClipPos(v.vertex + normalize(v.normal) * _OutLine);
-                float4 pos=mul(UNITY_MATRIX_MV,v.vertex);
-                float3 normal=mul((float3x3)UNITY_MATRIX_IT_MV,v.normal);
-                normal.z=0.5;
-                pos=pos+float4(normalize(normal),0)*_OutLine;
-                o.vertex=mul(UNITY_MATRIX_P,pos);
-
+                //shader入门精要上的做法
+                // float4 pos=mul(UNITY_MATRIX_MV,v.vertex);
+                // float3 normal=mul((float3x3)UNITY_MATRIX_IT_MV,v.normal);
+                // normal.z=0.5;
+                // pos=pos+float4(normalize(normal),0)*_OutLine;
+                // o.vertex=mul(UNITY_MATRIX_P,pos);
+                float3 pos = v.vertex + v.normal * _OutLine;
+                o.vertex = UnityObjectToClipPos(pos);
                 return o;
             }
 
@@ -73,12 +69,10 @@ Shader "LX/cartoon2"
             {
                 "LightMode"="ForwardBase"
             }
-            Cull Back
+          
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            // make fog work
-            #pragma multi_compile_fog
 
             #include "UnityCG.cginc"
 
@@ -92,7 +86,6 @@ Shader "LX/cartoon2"
             struct v2f
             {
                 float2 uvMain : TEXCOORD0;
-                UNITY_FOG_COORDS(1)
                 float4 vertex : SV_POSITION;
                 float4 objectVertex:TEXCOORD2;
                 float3 worldLightDir:TEXCOORD3;
@@ -104,7 +97,9 @@ Shader "LX/cartoon2"
             float4 _MainTex_ST;
 
             sampler2D _RampTex;
+            float4 _RampColor;
 
+            float _SpecularThreshold;
 
             v2f vert(appdata v)
             {
@@ -112,7 +107,6 @@ Shader "LX/cartoon2"
                 o.objectVertex = v.vertex;
                 o.vertex = UnityObjectToClipPos(v.vertex + normalize(v.normal) * 0);
                 o.uvMain = TRANSFORM_TEX(v.uv, _MainTex);
-                UNITY_TRANSFER_FOG(o, o.vertex);
 
                 o.worldLightDir = normalize(UnityWorldSpaceLightDir(mul(unity_ObjectToWorld, v.vertex)));
                 o.worldNormal = normalize(UnityObjectToWorldNormal(v.normal));
@@ -122,30 +116,23 @@ Shader "LX/cartoon2"
 
             fixed4 frag(v2f i) : SV_Target
             {
-                // sample the texture
-
                 fixed4 col = tex2D(_MainTex, i.uvMain);
-                // apply fog
-                UNITY_APPLY_FOG(i.fogCoord, col);
-
                 fixed3 viewDir = normalize(UnityWorldSpaceViewDir(i.worldPos));
                 fixed3 worldLightDir = i.worldLightDir;
                 fixed3 worldNormal = i.worldNormal;
+
                 fixed value = dot(worldNormal, worldLightDir) / 2 + 0.5;
 
-                float3 diffuse = tex2D(_RampTex,fixed2(value, value)) * col * 0.6;
-                //fixed3 diffuse = max(0, dot(worldLightDir, worldNormal)) * col;
+                float3 diffuse = tex2D(_RampTex,fixed2(value, value)) * col * _RampColor;
+
                 fixed3 reflectDir = normalize(reflect(-worldLightDir, worldNormal));
                 fixed3 specluar = pow(max(0, dot(viewDir, reflectDir)), 8) * col;
 
-                specluar = step(0.5, specluar);
+                specluar = step(_SpecularThreshold, specluar);
                 return fixed4(diffuse + specluar, 1);
             }
             ENDCG
         }
-
-
-
     }
     Fallback "Diffuse"
 }
