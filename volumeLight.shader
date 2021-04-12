@@ -42,8 +42,8 @@ Shader "LX/VolumeLight"
                 float extrude = dot(toLight, v.normal) < 0.0 ? 1.0 : 0.0;
                 v.vertex.xyz += v.normal * 0.05;
                 v.vertex.xyz -= toLight * (extrude * extrudeDistance);
+                
                 o.pos = UnityObjectToClipPos(v.vertex);
-
                 o.objPos = v.vertex;
                 return o;
             }
@@ -53,6 +53,7 @@ Shader "LX/VolumeLight"
             {
                 float att = 1 / (1 + length(i.objPos));
                 float4 c = pow(min(1,BaseColor * att*Intensity), Pow);
+                c=lerp(0.3,1,c);
                 return c;
             }
             ENDCG
