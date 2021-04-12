@@ -1,5 +1,3 @@
-// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
 Shader "LX/SSS"
 {
     Properties
@@ -61,7 +59,7 @@ Shader "LX/SSS"
                 return fixed4(0,0,0, 1);
             }
             ENDCG
-        }//end pass
+        }
         pass
         {
             Blend One One
@@ -78,18 +76,16 @@ Shader "LX/SSS"
             struct v2f
             {
                 float4 pos:SV_POSITION;
-                float3 N:TEXCOORD0;
-                float3 litDir:TEXCOORD1;
-                //float4 vp:TEXCOORD2;
+                float3 normal:TEXCOORD0;
+                float3 lightDir:TEXCOORD1;
             };
 
             v2f vert(appdata_base v)
             {
                 v2f o;
                 o.pos = UnityObjectToClipPos(v.vertex);
-                o.N = v.normal;
-                o.litDir = ObjSpaceLightDir(v.vertex);
-                //o.vp=v.vertex;
+                o.normal = v.normal;
+                o.lightDir = ObjSpaceLightDir(v.vertex);
                 return o;
             }
 
@@ -100,19 +96,15 @@ Shader "LX/SSS"
 
             float4 frag(v2f i):COLOR
             {
-                float3 N = normalize(i.N);
-                //float3 litDir=ObjSpaceLightDir(i.vp);
-                float3 litDir = i.litDir; //光源方向
-                float dist = length(litDir); //到光源的原始距离
-                dist = max(0, dist - _DistAdjust); //对原始距离进行一个偏移
-                float att = 1 / (1 + dist * dist);
+                float3 lightDir = i.lightDir; //光源方向
+                float distance = length(lightDir); //到光源的原始距离
+                distance = max(0, distance - _DistAdjust); //对原始距离进行一个偏移
+                float att = 1 / (1 + distance * distance);
                 att = pow(att, _Atten); //计算光的衰减速度
-                float4 c = _BaseColor * att;
-                //c.a=1-c.a;
-                return c * _sssDensity;
+                return  _BaseColor * att * _sssDensity;
             }
             ENDCG
-        }//end pass
+        }
     }
     FallBack "Diffuse"
 }

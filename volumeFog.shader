@@ -8,7 +8,7 @@ Shader "LX/VolumeFog"
     {
         Tags
         {
-            "Queue"="Geometry+600"
+            "Queue"="Geometry"
         }
         pass
         {
@@ -26,9 +26,8 @@ Shader "LX/VolumeFog"
             struct v2f
             {
                 float4 pos : POSITION;
-                float4 scr:TEXCOORD1;
-                float4 center:TEXCOORD2;
-                float4 vp:TEXCOORD3;
+                float4 center:TEXCOORD0;
+                float4 vertex:TEXCOORD1;
             };
 
             sampler2D MainTex;
@@ -38,25 +37,23 @@ Shader "LX/VolumeFog"
             {
                 v2f o;
                 o.pos = UnityObjectToClipPos(v.vertex);
-                o.scr = o.pos;
-                float4 center = UnityObjectToClipPos(float4(0, 0, 0, 1)); //
-                float4 vp = UnityObjectToClipPos(v.vertex);
+                float4 center = UnityObjectToClipPos(float4(0, 0, 0, 1));
+                float4 vertex = UnityObjectToClipPos(v.vertex);
+                o.vertex = vertex;
                 o.center = center;
-                o.vp = vp;
+
                 return o;
             }
 
 
             float4 frag(v2f i) : COLOR
             {
-                float3 center = i.center.xyz / i.center.w;
-                float3 vp = i.vp.xyz / i.vp.w;
-                center = vp - center;
-                float dc = max(0,1 - length(center));
-                dc = pow(dc, 6);
-                dc = dc * Intensity;
-                dc = dc / (1 + dc);
-                return fixed4(dc, dc, dc, dc);
+                float2 center = i.center.xy / i.center.w;
+                float2 vertex = i.vertex.xy / i.vertex.w;
+                float c = 1 - max(0, length(vertex - center));
+                c = pow(c, 4);
+                c = lerp(0, Intensity, c);
+                return fixed4(c, c, c, 0);
             }
             ENDCG
         }

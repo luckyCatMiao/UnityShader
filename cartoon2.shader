@@ -122,12 +122,10 @@
                 fixed3 worldNormal = i.worldNormal;
 
                 fixed value = dot(worldNormal, worldLightDir) / 2 + 0.5;
-
                 float3 diffuse = tex2D(_RampTex,fixed2(value, value)) * col * _RampColor;
 
                 fixed3 reflectDir = normalize(reflect(-worldLightDir, worldNormal));
                 fixed3 specluar = pow(max(0, dot(viewDir, reflectDir)), 8) * col;
-
                 specluar = step(_SpecularThreshold, specluar);
                 return fixed4(diffuse + specluar, 1);
             }
