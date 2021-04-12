@@ -50,7 +50,7 @@ Shader "LX/VolumeFog"
             {
                 float2 center = i.center.xy / i.center.w;
                 float2 vertex = i.vertex.xy / i.vertex.w;
-                float c = 1 - max(0, length(vertex - center));
+                float c = 1 - length(vertex - center);
                 c = pow(c, 4);
                 c = lerp(0, Intensity, c);
                 return fixed4(c, c, c, 0);
