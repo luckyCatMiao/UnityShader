@@ -10,10 +10,11 @@ public class Bloom : MonoBehaviour
     {
         Material material = new Material(shader);
         int width = src.width/downSample;
-        int height = src.height/downSample ;
+        int height = src.height/downSample;
 
         var brightArea = RenderTexture.GetTemporary(width, height, 0);
         brightArea.filterMode = FilterMode.Bilinear;
+        material.SetFloat("threshold",threshold);
         Graphics.Blit(src, brightArea, material, 0);
         
         for (int i = 0; i < iteration; i++)
@@ -30,7 +31,6 @@ public class Bloom : MonoBehaviour
         }
 
         material.SetTexture("_Bloom", brightArea);
-        material.SetFloat("threshold",threshold);
         Graphics.Blit(src, dest, material, 1);
     }
 }

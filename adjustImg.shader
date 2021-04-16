@@ -10,7 +10,6 @@
         Cull Off
         Zwrite Off
 
-        
         Pass
         {
             CGPROGRAM

@@ -9,8 +9,7 @@ public class GaussianBlur : MonoBehaviour
     {
         Material material = new Material(shader);
         var buffer=RenderTexture.GetTemporary(src.width, src.height);
-        Graphics.Blit(src, buffer, material,0);
-        Graphics.Blit(src, buffer, material,1);
+        Graphics.Blit(src, buffer);
         for (int i = 0; i < iterationTime; i++)
         {
             var buffer2=RenderTexture.GetTemporary(src.width, src.height);
