@@ -9,7 +9,10 @@
     #include "UnityCG.cginc"
 
     sampler2D _MainTex;
-    half4 _StripParams;
+    float _StripCosAngle;
+    float _StripSinAngle;
+    float _StripLimitsMin;
+    float _StripLimitsMax;
     half3 _StripInnerColor;
     half3 _StripOuterColor;
 
@@ -29,10 +32,11 @@
 
     half3 strip_color(half2 uv)
     {
-        half2 p = (uv - 0.5) * _StripDensity;
-        half brightness = cos(dot(p, _StripParams.xy));
-        half lum_strip = Luminance(1.0 - brightness);
-        return lerp(_StripOuterColor, _StripInnerColor, step(lum_strip, _StripThickness));
+        //fixed passStep=step(_StripThickness,sin(uv.x*_StripDensity)*sin(uv.y*_StripDensity));
+        //网点化处理，通过cos函数进行周期变化，同时点积从原点出发到uv坐标的向量和传入的一个向量，实际效果是在单位向量上进行了投影
+        fixed passStep = step(_StripThickness,
+                              (cos(dot(uv * _StripDensity, float2(_StripCosAngle, _StripSinAngle))) + 1) / 2);
+        return lerp(_StripInnerColor, _StripOuterColor, passStep);
     }
 
 
@@ -45,10 +49,12 @@
 
     half4 frag(v2f_img i) : SV_Target
     {
+        //判断亮度落在哪个区域中，该shader一共有三个区域
         half lum = Luminance(tex2D(_MainTex, i.uv).rgb);
-        half s1 = step(lum, _StripParams.z);
-        half s2 = step(_StripParams.z, lum) * step(lum, _StripParams.w);
-        half3 color = lerp(lerp(_BackgroundColor, strip_color(i.uv), s2), _FillColor, s1);
+        half underMin = step(lum, _StripLimitsMin);
+        half betweenLimit = step(_StripLimitsMin, lum) * step(lum, _StripLimitsMax);
+        //设置最后的颜色，如果亮度落在中间区域中，还要进行网点化处理
+        half3 color = lerp(lerp(_BackgroundColor, strip_color(i.uv), betweenLimit), _FillColor, underMin);
 
         //用Amount对原像素颜色和处理后的像素颜色进行插值
         half3 oldColor = tex2D(_MainTex, i.uv).rgb;

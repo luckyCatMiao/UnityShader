@@ -1,14 +1,8 @@
-﻿// Colorful FX - Unity Asset
-// Copyright (c) 2015 - Thomas Hourdel
-// http://www.thomashourdel.com
-
-namespace Colorful
+﻿namespace Colorful
 {
     using UnityEngine;
-
-    [HelpURL("http://www.thomashourdel.com/colorful/doc/artistic-effects/comic-book.html")]
+    
     [ExecuteInEditMode]
-    [AddComponentMenu("Colorful FX/Artistic Effects/Comic Book")]
     public class ComicBook : MonoBehaviour
     {
         [Tooltip("Strip orientation in radians.")]
@@ -29,7 +23,7 @@ namespace Colorful
         [ColorUsage(false)] public Color FillColor = new Color(0.1f, 0.1f, 0.1f);
 
         [ColorUsage(false)] public Color BackgroundColor = Color.white;
-        
+
         [Range(0f, 1f), Tooltip("Blending factor.")]
         public float Amount = 1f;
 
@@ -39,13 +33,13 @@ namespace Colorful
         {
             Material material = new Material(shader);
             shader.hideFlags = HideFlags.HideAndDontSave;
-            material.SetVector("_StripParams",
-                new Vector4(Mathf.Cos(StripAngle), Mathf.Sin(StripAngle), StripLimits.x, StripLimits.y));
-           
-            
-            material.SetFloat("_StripDensity",StripDensity * 10f);
-            material.SetFloat("_StripThickness",StripThickness);
-            material.SetFloat("_Amount",Amount);
+            material.SetFloat("_StripCosAngle", Mathf.Cos(StripAngle / 180 * Mathf.PI));
+            material.SetFloat("_StripSinAngle", Mathf.Sin(StripAngle / 180 * Mathf.PI));
+            material.SetFloat("_StripLimitsMin", StripLimits.x);
+            material.SetFloat("_StripLimitsMax", StripLimits.y);
+            material.SetFloat("_StripDensity", StripDensity * 10f);
+            material.SetFloat("_StripThickness", StripThickness);
+            material.SetFloat("_Amount", Amount);
             material.SetColor("_StripInnerColor", StripInnerColor);
             material.SetColor("_StripOuterColor", StripOuterColor);
 
