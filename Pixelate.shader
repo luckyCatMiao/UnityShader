@@ -31,7 +31,6 @@ Shader "LX/Pixelate"
     {
         half2 reminder = stitch(i.uv);
         half4 color = pixel(i.uv);
-
         return (reminder.y == 0 || reminder.x == 0)&&_AddStrip==1 ? half4(0, 0, 0, 1) : color;
     }
     ENDCG
