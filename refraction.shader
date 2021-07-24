@@ -47,8 +47,8 @@
 
             fixed4 frag(v2f i):SV_Target
             {
-                fixed3 reflectColor = texCUBE(_Cubemap, i.worldRefr) * _RefractScale;
-                return fixed4(reflectColor, 1.0);
+                fixed3 refractionColor = texCUBE(_Cubemap, i.worldRefr) * _RefractScale;
+                return fixed4(refractionColor, 1.0);
             }
             ENDCG
 
