@@ -12,7 +12,7 @@
             Tags
             {
                 "LightMode"="ForwardBase"
-            }
+            }  
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
@@ -34,7 +34,7 @@
                 float3 worldNormal:TEXCOORD1;
                 float3 worldPos:TEXCOORD2;
                 float3 worldRefl:TEXCOORD3;
-            };
+            }; 
 
             v2f vert(a2v vertData)
             {

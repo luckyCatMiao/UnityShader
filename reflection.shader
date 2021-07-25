@@ -4,7 +4,7 @@
     {
         _ReflectScale("Reflect Scale",Float)=1
         _ReflectAmount("Reflect Amount",Float)=0.5
-        _Cubemap("Reflection Cubemap",Cube)="reflecCube"
+        _Cubemap("Reflection Cubemap",Cube)="_Skybox"
     }
     SubShader
     {
