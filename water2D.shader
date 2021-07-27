@@ -54,7 +54,8 @@
                 v2f o;
 
                 float4 vertex=v.vertex;
-                vertex.z = vertex.z + _SinTime.y*sin(vertex.x*_Frequency)*_Amplitude;
+                
+                vertex.z = vertex.z + sin(_Time.y*_Speed)*sin(vertex.x*_Frequency)*_Amplitude;
                 o.vertex = UnityObjectToClipPos(vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex)+_Time.x;
 
