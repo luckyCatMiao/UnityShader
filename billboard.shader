@@ -10,7 +10,7 @@
         Tags
         {
             "RenderType"="Opaque"
-            "Queue"="Transparnet"
+            "Queue"="Transparent"
             "IgnoreProjector"="True"
             "DisableBatching"="True"
         }
