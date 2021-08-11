@@ -8,7 +8,7 @@ Shader "LX/VolumeFog"
     {
         Tags
         {
-            "Queue"="Geometry"
+            "Queue"="Transparent"
         }
         pass
         {
