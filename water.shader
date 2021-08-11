@@ -15,6 +15,7 @@
         Tags { "Queue" = "TransParent"  "RenderType"="Opaque" }
         GrabPass{"_RefractionTex"}
         pass{
+           
             Tags { "LightMode"="ForwardBase" }
             CGPROGRAM
             
