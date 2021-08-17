@@ -57,7 +57,7 @@
             v2f vert(appdata v)
             {
                 v2f o;
-
+                
                 o.uv = TRANSFORM_TEX(v.uv, _FrontTex);
 
                 //求出现在是在哪一行，用来进行偏移
@@ -68,7 +68,7 @@
                 float yValue = frac(v.uv.y * _YTiles);
 
                 float isFront = step(1 - _XGap, xValue) || step(1 - _YGap, yValue);
-                v.vertex.y+=-1*isFront;
+                v.vertex.z+=-0.1f*isFront;
 
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 return o;
