@@ -38,11 +38,20 @@
         void surf(Input IN, inout SurfaceOutputStandard o)
         {
             float4 c = tex2D(_MainTex, IN.uv_MainTex) * _Color;
-            fixed3 color = floor(c.rgb * 256 / (256 / _DiscreteLevel)) * (256 / _DiscreteLevel) / 256;
-            fixed brightness=saturate(Luminance(color));
-            fixed3 grayColor = fixed3(brightness,brightness,brightness);
-            
-            o.Albedo = lerp(color,grayColor,_GrayScale);
+            //先计算出亮度
+            fixed brightness = Luminance(c.rgb);
+            //灰度离散化
+            brightness = floor(brightness * 256 / (256 / _DiscreteLevel)) * (256 / _DiscreteLevel) / 256;
+            fixed3 grayColor = fixed3(brightness, brightness, brightness);
+
+            //彩色离散化
+            fixed r = floor(c.r * 256 / (256 / _DiscreteLevel)) * (256 / _DiscreteLevel) / 256;
+            fixed g = floor(c.g * 256 / (256 / _DiscreteLevel)) * (256 / _DiscreteLevel) / 256;
+            fixed b = floor(c.b * 256 / (256 / _DiscreteLevel)) * (256 / _DiscreteLevel) / 256;
+            fixed3 color = fixed3(r, g, b);
+
+            //插值
+            o.Albedo = lerp(color, grayColor, _GrayScale);
             o.Metallic = _Metallic;
             o.Smoothness = _Glossiness;
             o.Alpha = c.a;
