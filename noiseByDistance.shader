@@ -1,4 +1,4 @@
-﻿Shader "LX/Dithering"
+﻿Shader "LX/NoiseByDistance"
 {
     Properties
     {
