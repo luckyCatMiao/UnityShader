@@ -41,12 +41,16 @@
             fixed4 colorForward = tex2D(_TexForward, yz);
             fixed4 colorUp = tex2D(_TexUp, xz);
             fixed4 colorLeft = tex2D(_TexLeft, xy);
-            float forwardRate = abs(dot(worldNormal, fixed3(1, 0, 0)));
-            float upRate = abs(dot(worldNormal, fixed3(0, 1, 0)));
-            float leftRate = abs(dot(worldNormal, fixed3(0, 0, 1)));
 
-            float4 total = forwardRate + upRate + leftRate;
-            fixed4 finalColor = (forwardRate * colorForward + upRate * colorUp + leftRate * colorLeft) / total;
+            worldNormal = abs(worldNormal);
+            worldNormal = worldNormal / (worldNormal.x + worldNormal.y + worldNormal.z);
+            fixed4 finalColor = colorForward * worldNormal.x + colorUp * worldNormal.y + colorLeft * worldNormal.z;
+            // float forwardRate = abs(dot(worldNormal, fixed3(1, 0, 0)));
+            // float upRate = abs(dot(worldNormal, fixed3(0, 1, 0)));
+            // float leftRate = abs(dot(worldNormal, fixed3(0, 0, 1)));
+            //
+            // float4 total = forwardRate + upRate + leftRate;
+            // fixed4 finalColor = (forwardRate * colorForward + upRate * colorUp + leftRate * colorLeft) / total;
 
             return finalColor;
         }
