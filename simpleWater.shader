@@ -42,7 +42,7 @@
             float4 screenPos;
         };
 
-        uniform sampler2D _CameraDepthTexture;
+        sampler2D _CameraDepthTexture;
         fixed4 _Color;
         fixed4 _EdgeColor;
         float _WaveHeight;
