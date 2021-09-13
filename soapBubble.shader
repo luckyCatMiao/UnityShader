@@ -11,6 +11,9 @@
         _Distortion("Distortion",float) = 1
         _Smoothness("Smoothness", float) = 0.8
         _Specular("Specular", float) = 0.5
+        _UVScale("UVScale", float) = 4
+        _UVOffset("UVOffset", float) = 0
+        _RimPow("RimPow", float) = 2
     }
     SubShader
     {
@@ -53,6 +56,10 @@
         float4 _RefractionTex_TexelSize;
         float _Smoothness;
 
+        float _UVScale;
+        float _RimPow;
+        float _UVOffset;
+
         void vertexDataFunc(inout appdata_full v, out Input o)
         {
             UNITY_INITIALIZE_OUTPUT(Input, o);
@@ -62,13 +69,15 @@
 
         void surf(Input IN, inout SurfaceOutputStandardSpecular o)
         {
+            //rim
             float3 worldViewDir = normalize(UnityWorldSpaceViewDir(IN.worldPos));
-            float rimValue = 1 - pow(dot(worldViewDir, IN.worldNormal), 2);
-            fixed2 newUV = tex2D(_MainTex, IN.uv_MainTex + _SinTime.x * fixed2(1, 1) * 0.5).rr + abs(
-                IN.uv_MainTex.x * 2.0 + -1.0) * 0.5;
-            fixed4 c = tex2D(_ColorTex, newUV*4);
+            float rimValue = 1 - pow(dot(worldViewDir, IN.worldNormal), _RimPow);
 
-            //法线
+            //重新映射uv
+            fixed2 newUV = tex2D(_MainTex, (IN.uv_MainTex + _SinTime.x * fixed2(1, 1)) * _UVScale).rr;
+            fixed4 c = tex2D(_ColorTex, saturate(newUV + fixed2(_UVOffset, _UVOffset)));
+
+            //折射
             fixed3 bump = UnpackNormal(tex2D(_NormalTex, IN.uv_MainTex.xy)).rgb;
             bump.xy *= _NormalScale;
             bump = normalize(bump);
@@ -76,11 +85,10 @@
             float2 offset = bump.xy * _Distortion * _RefractionTex_TexelSize.xy;
             fixed3 refrCol = tex2D(_RefractionTex, IN.screenPos.xy + offset).rgb;
 
-            o.Albedo = c.rgb * refrCol * _Alpha;
+            o.Albedo = (c.rgb * rimValue + refrCol * (1 - rimValue)) * _Alpha;
             o.Emission = rimValue * _RimColor * _Alpha;
             o.Smoothness = _Smoothness;
-            o.Specular=_Specular;
-           
+            o.Specular = _Specular;
         }
         ENDCG
     }
