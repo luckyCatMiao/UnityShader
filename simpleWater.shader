@@ -80,7 +80,7 @@
             //深度插值颜色
             fixed4 waterColor = lerp(_EdgeColor, _Color, saturate(distance * _EdgeThreshold));
 
-
+            //form
             float4 foamColor = tex2D(_FoamTex, (IN.uv_FoamTex + fixed2(1, 1) * _Time.x * _FoamSpeed) * 20);
             fixed formDegree = clamp(distance, 0, _FoamThreshold);
             //把0~_FoamThreshold 缩放到0~1

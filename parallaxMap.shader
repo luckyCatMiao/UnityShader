@@ -44,22 +44,24 @@
         void surf(Input IN, inout SurfaceOutputStandard o)
         {
             _ParallaxScale /= 100.0f;
-            //viewDir是切线空间的viewDir
+            //viewDir是切线空间的
             float2 offset = (tex2D(_ParallaxMap, IN.uv_MainTex).r - 1) * IN.viewDir.xy * _ParallaxScale + IN.uv_MainTex;
             float2 Offset1 = (tex2D(_ParallaxMap, offset).r - 1) * IN.viewDir.xy * _ParallaxScale + offset;
             float2 Offset2 = (tex2D(_ParallaxMap, Offset1).r - 1) * IN.viewDir.xy * _ParallaxScale + Offset1;
             float2 Offset3 = (tex2D(_ParallaxMap, Offset2).r - 1) * IN.viewDir.xy * _ParallaxScale + Offset2;
             float2 uv = Offset3;
+            
             fixed4 c = tex2D(_MainTex, uv) * _Color;
+
+            fixed3 normal = UnpackNormal(tex2D(_NormalMap, uv));
+            normal.xy *= _NormalScale;
+            normal = normalize(normal);
+            o.Normal = normal;
+
             o.Albedo = c.rgb;
             o.Metallic = _Metallic;
             o.Smoothness = _Glossiness;
             o.Alpha = c.a;
-
-            fixed3 normal = UnpackNormal(tex2D(_NormalMap, uv));;
-            normal.xy *= _NormalScale;
-            normal = normalize(normal);
-            o.Normal = normal;
         }
         ENDCG
     }

@@ -40,8 +40,8 @@
         void surf(Input IN, inout SurfaceOutputStandard o)
         {
             IN.screenPos.xy /= IN.screenPos.w;
-            IN.screenPos.y=-IN.screenPos.y+_Offset;
-            IN.screenPos.xy+= fixed2(_DistortionScale, 0) * sin(_Time.y + IN.screenPos.y * _WaveLength);
+            IN.screenPos.y = -IN.screenPos.y + _Offset;
+            IN.screenPos.x += _DistortionScale * sin(_Time.y + IN.screenPos.y * _WaveLength)*0.01;
             fixed4 c = tex2D(_GrabTex, IN.screenPos) * _Color;
             o.Albedo = c.rgb;
             o.Alpha = c.a;
