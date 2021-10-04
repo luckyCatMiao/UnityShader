@@ -18,38 +18,6 @@
         }
         LOD 200
 
-        Cull Front
-        CGPROGRAM
-        #pragma surface surf Standard fullforwardshadows
-        #pragma target 3.0
-
-        sampler2D _BackTex;
-        sampler2D _Mask;
-
-        struct Input
-        {
-            float2 uv_BackTex;
-            float2 uv_Mask;
-        };
-
-        half _Glossiness;
-        half _Metallic;
-        fixed4 _Color;
-        float _MaskClipValue;
-
-        void surf(Input IN, inout SurfaceOutputStandard o)
-        {
-            //clip(tex2D(_Mask, IN.uv_Mask).a - _MaskClipValue);
-            fixed4 c = tex2D(_BackTex, IN.uv_BackTex) * _Color;
-            o.Albedo = c.rgb;
-            o.Metallic = _Metallic;
-            o.Smoothness = _Glossiness;
-            o.Alpha = c.a;
-        }
-        ENDCG
-
-
-
         Cull Back
         CGPROGRAM
         #pragma surface surf Standard fullforwardshadows
@@ -79,6 +47,38 @@
             o.Alpha = c.a;
         }
         ENDCG
+        
+        Cull Front
+        CGPROGRAM
+        #pragma surface surf Standard fullforwardshadows
+        #pragma target 3.0
+
+        sampler2D _BackTex;
+        sampler2D _Mask;
+
+        struct Input
+        {
+            float2 uv_BackTex;
+            float2 uv_Mask;
+        };
+
+        half _Glossiness;
+        half _Metallic;
+        fixed4 _Color;
+        float _MaskClipValue;
+
+        void surf(Input IN, inout SurfaceOutputStandard o)
+        {
+            clip(tex2D(_Mask, IN.uv_Mask).a - _MaskClipValue);
+            fixed4 c = tex2D(_BackTex, IN.uv_BackTex) * _Color;
+            o.Albedo = c.rgb;
+            o.Metallic = _Metallic;
+            o.Smoothness = _Glossiness;
+            o.Alpha = c.a;
+        }
+        ENDCG
+
+
     }
     FallBack "Diffuse"
 }
