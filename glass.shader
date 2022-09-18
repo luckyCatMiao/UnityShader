@@ -105,8 +105,6 @@
                 float3 reflectionColor = texCUBE(_CubeMap, reflectionDir);
 
                 //混合反射和折射
-                
-
                 return fixed4((refractionCol*_RefractionAmount + (1-_RefractionAmount)*reflectionColor)*(1-_TexColorAmount)+col*_TexColorAmount, 1);
             }
             ENDCG
