@@ -42,15 +42,11 @@
 
             fixed4 frag(v2f i) : SV_Target
             {
-                fixed4 col = tex2D(_MainTex, i.uv + fixed2(0, 0) * _BlurDistance*_MainTex_TexelSize.xy) * 1/9;
-                col += tex2D(_MainTex, i.uv + fixed2(0, 1) * _BlurDistance*_MainTex_TexelSize.xy) * 1/9;
-                col += tex2D(_MainTex, i.uv + fixed2(-1, 0) * _BlurDistance*_MainTex_TexelSize.xy) * 1/9;
-                col += tex2D(_MainTex, i.uv + fixed2(-1, -1) * _BlurDistance*_MainTex_TexelSize.xy) * 1/9;
-                col += tex2D(_MainTex, i.uv + fixed2(0, -1) * _BlurDistance*_MainTex_TexelSize.xy) * 1/9;
-                col += tex2D(_MainTex, i.uv + fixed2(1, -1) * _BlurDistance*_MainTex_TexelSize.xy) * 1/9;
-                col += tex2D(_MainTex, i.uv + fixed2(-1, 1) * _BlurDistance*_MainTex_TexelSize.xy) * 1/9;
-                col += tex2D(_MainTex, i.uv + fixed2(0, 1) * _BlurDistance*_MainTex_TexelSize.xy) * 1/9;
-                col += tex2D(_MainTex, i.uv + fixed2(1, 1) * _BlurDistance*_MainTex_TexelSize.xy) * 1/9;
+                fixed4 col = tex2D(_MainTex, i.uv + fixed2(0.5, 0.5) * _BlurDistance*_MainTex_TexelSize.xy) * 0.25;
+                col += tex2D(_MainTex, i.uv + fixed2(-0.5, -0.5) * _BlurDistance*_MainTex_TexelSize.xy) * 0.25;
+                col += tex2D(_MainTex, i.uv + fixed2(0.5, -0.5) * _BlurDistance*_MainTex_TexelSize.xy) * 0.25;
+                col += tex2D(_MainTex, i.uv + fixed2(-0.5, 0.5) * _BlurDistance*_MainTex_TexelSize.xy) * 0.25;
+                
                 return col;
             }
             ENDCG
