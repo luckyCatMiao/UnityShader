@@ -13,7 +13,7 @@
         {
             CGPROGRAM
             #pragma vertex vert
-            #pragma fragment extractBright
+            #pragma fragment frag
 
             uniform int _SampleCount;
             uniform float _BlurSize;
@@ -47,7 +47,7 @@
                 return o;
             }
 
-            fixed4 extractBright(v2f i) : SV_Target
+            fixed4 frag(v2f i) : SV_Target
             {
                 float4 finalColor = fixed4(0, 0, 0, 1);
                 for (int y = _StartIndex; y <= _EndIndex; y++)
@@ -60,6 +60,8 @@
                 }
                 return finalColor;
             }
+
+            
             ENDCG
         }
     }

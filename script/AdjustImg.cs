@@ -16,7 +16,6 @@ public class AdjustImg : MonoBehaviour
         material.SetFloat("brightness", brightness);
         material.SetFloat("saturation", saturation);
         material.SetFloat("contrast", contrast);
-
         Graphics.Blit(src, dest, material);
     }
 }

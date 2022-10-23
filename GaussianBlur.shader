@@ -49,10 +49,10 @@
             o.vertex = UnityObjectToClipPos(v.vertex);
             const half2 uv = v.uv;
             o.uv[0] = uv;
-            o.uv[1] = uv + float2(0, _MainTex_TexelSize.x * 1);
-            o.uv[2] = uv + float2(0, _MainTex_TexelSize.x * 2);
-            o.uv[3] = uv + float2(0, _MainTex_TexelSize.x * -1);
-            o.uv[4] = uv + float2(0, _MainTex_TexelSize.x * -2);
+            o.uv[1] = uv + float2(_MainTex_TexelSize.x * 1,0);
+            o.uv[2] = uv + float2(_MainTex_TexelSize.x * 2,0);
+            o.uv[3] = uv + float2(_MainTex_TexelSize.x * -1,0);
+            o.uv[4] = uv + float2(_MainTex_TexelSize.x * -2,0);
             return o;
         }
 

@@ -67,8 +67,8 @@
                     singleWeight += 1 / singleWeight;
                     offset = mul(rotateMatrix, offset);
                     fixed4 color = tex2D(_MainTex, i.uv + offset * _MainTex_TexelSize.xy * (1 - singleWeight));
-                    finalColor += color * color;
-                    totalWeight += color;
+                    finalColor += color ;
+                    totalWeight += 1;
                 }
 
                 float4 blurColor = finalColor / totalWeight;

@@ -22,11 +22,13 @@ namespace Blur
             var width = src.width >> downSample;
             var height = src.height >> downSample;
             var tempBuffer = RenderTexture.GetTemporary(width, height);
+            tempBuffer.filterMode = FilterMode.Bilinear;
             Graphics.Blit(src,tempBuffer);
 
             for (int i = 0; i < interation; i++)
             {
                 var tempBuffer2 = RenderTexture.GetTemporary(width, height);
+                tempBuffer2.filterMode = FilterMode.Bilinear;
                 mat.SetFloat(BlurDistance,blurDistance*(i+1));
                 Graphics.Blit(tempBuffer,tempBuffer2,mat);
                 RenderTexture.ReleaseTemporary(tempBuffer);
