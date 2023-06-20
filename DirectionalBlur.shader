@@ -51,7 +51,6 @@
                     totalWeight+=weight;
                     col+=tex2D(_MainTex,i.uv+index*_Direction*_MainTex_TexelSize.xy)*weight;
                 }
-               
                 return col/totalWeight;
             }
             ENDCG
